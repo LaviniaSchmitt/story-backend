@@ -39,6 +39,12 @@ const response = await fetch(
 
 const data = await response.json();
 
+console.log(data);
+
+res.json({
+  url: data.data?.[0]?.url
+});
+
 res.json(data);
 
 } catch (error) {
