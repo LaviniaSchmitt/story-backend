@@ -43,20 +43,6 @@ app.post("/generate", async (req, res) => {
     });
   }
 });
-    const data = await response.json();
-
-    res.json(data);
-
-  } catch (error) {
-    console.error("IMAGE ERROR:", error);
-
-    res.status(500).json({
-      error: error.message
-    });
-  }
-});
-
-
 // =========================
 // SERVER START
 // =========================
