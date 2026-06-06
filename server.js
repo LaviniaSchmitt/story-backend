@@ -24,7 +24,7 @@ app.post("/generate", async (req, res) => {
         "Authorization": `Bearer ${XAI_API_KEY}`
       },
       body: JSON.stringify({
-        model: "grok-2-latest",
+        model: "grok-4",
         messages: [
           { role: "user", content: prompt }
         ]
@@ -43,28 +43,6 @@ app.post("/generate", async (req, res) => {
     });
   }
 });
-
-
-// =========================
-// IMAGE (HYPOTHETISCH xAI)
-// =========================
-app.post("/generate-image", async (req, res) => {
-  const { prompt } = req.body;
-
-  try {
-    const response = await fetch("https://api.x.ai/v1/images/generations", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${XAI_API_KEY}`
-      },
-      body: JSON.stringify({
-        model: "grok-image-1",   // ⚠️ nur hypothetisch
-        prompt: prompt,
-        size: "1024x1024"
-      })
-    });
-
     const data = await response.json();
 
     res.json(data);
