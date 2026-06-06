@@ -24,7 +24,7 @@ app.post("/generate", async (req, res) => {
         "Authorization": `Bearer ${XAI_API_KEY}`
       },
       body: JSON.stringify({
-        model: "grok-4",
+        model: "grok-3",
         messages: [
           { role: "user", content: prompt }
         ]
@@ -63,5 +63,5 @@ app.post("/generate", async (req, res) => {
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
-  console.log(`Server läuft auf Port ${PORT}`);
+  console.log("Server läuft auf Port", PORT);
 });
