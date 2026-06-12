@@ -9,7 +9,6 @@ app.use(express.json());
 
 const XAI_API_KEY = process.env.XAI_API_KEY;
 
-
 // =========================
 // STORY (TEXT)
 // =========================
@@ -24,30 +23,76 @@ app.post("/generate", async (req, res) => {
         "Authorization": `Bearer ${XAI_API_KEY}`
       },
       body: JSON.stringify({
-        model: "grok-3",
+        model: "grok-3",           // oder "grok-4.3" falls du upgradest
         messages: [
+          { 
+            role: "system", 
+            content: "Du bist eine sehr talentierte erotische Autorin. Schreibe detailliert, sinnlich und explizit." 
+          },
           { role: "user", content: prompt }
-        ]
+        ],
+        temperature: 0.85,
+        max_tokens: 2500
+      })
+    });
+
+    const data = await response.json();
+    res.json(data);
+
+  } catch (error) {
+    console.error("STORY ERROR:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// =========================
+// BILDGENERIERUNG (NEU)
+// =========================
+app.post("/generate-image", async (req, res) => {
+  const { prompt, model = "grok-imagine-image-quality", n = 1, aspect_ratio = "9:16" } = req.body;
+
+  if (!prompt) {
+    return res.status(400).json({ error: "Prompt für das Bild fehlt" });
+  }
+
+  try {
+    const response = await fetch("https://api.x.ai/v1/images/generations", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${XAI_API_KEY}`
+      },
+      body: JSON.stringify({
+        model: model,
+        prompt: prompt,
+        n: n,                    // Anzahl Bilder (1-10)
+        aspect_ratio: aspect_ratio,   // z.B. "9:16", "16:9", "1:1", "4:3"
+        response_format: "url"   // oder "b64_json"
       })
     });
 
     const data = await response.json();
 
+    if (!response.ok) {
+      throw new Error(data.error?.message || "Fehler bei der Bildgenerierung");
+    }
+
     res.json(data);
 
   } catch (error) {
-    console.error("STORY ERROR:", error);
-
-    res.status(500).json({
-      error: error.message
+    console.error("IMAGE ERROR:", error);
+    res.status(500).json({ 
+      error: "Fehler beim Generieren des Bildes",
+      details: error.message 
     });
   }
 });
+
 // =========================
 // SERVER START
 // =========================
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
-  console.log("Server läuft auf Port", PORT);
+  console.log(`Server läuft auf Port ${PORT}`);
 });
