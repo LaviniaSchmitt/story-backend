@@ -91,7 +91,16 @@ app.post("/generate-image", async (req, res) => {
 // STimme
 app.post("/generate-audio", async (req, res) => {
 
-  const { text, voiceId } = req.body;
+ const { text, voice } = req.body;
+ const voices = {
+  Adam: process.env.VOICE_ADAM,
+  David: process.env.VOICE_DAVID,
+  Riley: process.env.VOICE_RILEY,
+  Monika: process.env.VOICE_MONIKA,
+  Voice_Actor: process.env.VOICE_VOICE_ACTOR
+};
+
+const voiceId = voices[voice];
   const ELEVENLABS_API_KEY = process.env.ELEVENLABS_API_KEY;
 
 const voices = {
