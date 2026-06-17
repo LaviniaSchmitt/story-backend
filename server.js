@@ -91,25 +91,26 @@ app.post("/generate-image", async (req, res) => {
 // STimme
 app.post("/generate-audio", async (req, res) => {
 
- const { text, voice } = req.body;
- const voices = {
-  Adam: process.env.VOICE_ADAM,
-  David: process.env.VOICE_DAVID,
-  Riley: process.env.VOICE_RILEY,
-  Monika: process.env.VOICE_MONIKA,
-  Voice_Actor: process.env.VOICE_VOICE_ACTOR
-};
+  const { text, voice } = req.body;
 
-const voiceId = voices[voice];
+  const voices = {
+    Adam: process.env.VOICE_ADAM,
+    David: process.env.VOICE_DAVID,
+    Riley: process.env.VOICE_RILEY,
+    Monika: process.env.VOICE_MONIKA,
+    Voice_Actor: process.env.VOICE_VOICE_ACTOR
+  };
+
+  const voiceId = voices[voice];
+  if (!voiceId) {
+  return res.status(400).json({
+    error: "Unbekannte Stimme: " + voice
+  });
+}
   const ELEVENLABS_API_KEY = process.env.ELEVENLABS_API_KEY;
 
-const voices = {
-  Adam: process.env.VOICE_ADAM,
-  David: process.env.VOICE_DAVID,
-  Riley: process.env.VOICE_RILEY,
-  Monika: process.env.VOICE_MONIKA,
-  Voice_Actor: process.env.VOICE_VOICE_ACTOR
-};
+  console.log("Voice:", voice);
+  console.log("VoiceID:", voiceId);
 
   try {
 
@@ -118,7 +119,7 @@ const voices = {
       {
         method: "POST",
         headers: {
-          "xi-api-key": process.env.ELEVENLABS_API_KEY,
+          "xi-api-key": ELEVENLABS_API_KEY,
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
@@ -128,6 +129,19 @@ const voices = {
       }
     );
 
+    if (!response.ok) {
+
+      const errorText = await response.text();
+
+      console.log("ELEVENLABS ERROR:");
+      console.log(errorText);
+
+      return res.status(500).json({
+        error: errorText
+      });
+    }
+console.log("Status:", response.status);
+console.log("Content-Type:", response.headers.get("content-type"));
     const buffer = await response.arrayBuffer();
 
     res.set("Content-Type", "audio/mpeg");
@@ -136,7 +150,7 @@ const voices = {
 
   } catch (error) {
 
-    console.error(error);
+    console.error("AUDIO ERROR:", error);
 
     res.status(500).json({
       error: error.message
@@ -144,13 +158,4 @@ const voices = {
 
   }
 
-});
-
-// =========================
-// SERVER START
-// =========================
-const PORT = process.env.PORT || 3000;
-
-app.listen(PORT, () => {
-  console.log(`Server läuft auf Port ${PORT}`);
 });
